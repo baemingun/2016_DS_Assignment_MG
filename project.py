@@ -106,8 +106,10 @@ class MinQueue(MaxQueue):
 
 def hash(str):
     m = 0
+    i = 1
     for c in str:
-        m = m + ord(c)
+        m = m + ord(c)*i
+        i = i + 1
     return m % HASHNUM
 
 class Adj:
@@ -227,7 +229,6 @@ class rbnode(object):
     def __repr__(self):
         return str(self.key)
 
-#Graph
 class Graph:
     def __init__(self):
         self.vertices = []
@@ -322,8 +323,10 @@ class DepthFirstSearch:
         c.add(u)
         c.scc = c.scc + 1
         vset = self.vertices
-        if u.parent >= 0:
-            self.set_scc(vset[u.parent],n)
+        while u.parent >= 0:
+            u = vset[u.parent]
+            c.add(u)
+            c.scc = c.scc + 1
         
     def scc_find(self, u):
         u.color = GRAY
@@ -669,7 +672,6 @@ def menu():
     return input("Select Menu: ")
 
 def main():
-    #initialize
     info = Graph()
     t = rbtree()
     d = hash_table()
@@ -680,10 +682,13 @@ def main():
     tweetnum = 0
     tweetuser = None # 5 uses it
 
-    #read file
-    fuser = open('user.txt', 'r+')
-    ffriend = open('friend.txt', 'r+')
-    fword = open('word.txt', 'r+')
+    try:
+        fuser = open('user.txt', 'r+')
+        ffriend = open('friend.txt', 'r+')
+        fword = open('word.txt', 'r+')
+    except:
+        print("There's no proper files!")
+        exit(0)
     while True:
         num = fuser.readline()
         fuser.readline()
@@ -856,6 +861,7 @@ def main():
                     s = info.get_vertex(userm.n[i])
                     if s:
                         del s
+            # not yet complete......
 
         elif(num == 8):
             DFS = DepthFirstSearch()
@@ -882,12 +888,12 @@ def main():
                 v1 = info.get_vertex(DFS.sccs[i].uid)
                 print("Rank",i+1, end='(The number of people - ')
                 print(v.scc,end='): ')
-                print(v1.name,end=' → ')
+                print(v1.name,end=' ')
                 p = v.first
                 while p:
-                    print(info.vertices[p.n].name,end=' → ')
+                    print('→ ',info.vertices[p.n].name,end=' ')
                     p = p.next
-                print(v1.name,'\n')
+                print('\n')
 
         elif(num == 9):
             userin = input("Start user: ")
@@ -927,6 +933,7 @@ def main():
                                 print("← ", sc.vertices[p].name,end=' ')
                                 p = sc.vertices[p].parent
                             print("← ",sc.vertices[p].name)
+                            print()
                     else:
                         print("After, there's no shortest path.")
                         break
