@@ -414,18 +414,16 @@ class rbtree(object):
     def search_point(self, key, content, x=None):
         if None == x:
             x = self.root
-        while x != self.nil and key != x.key:
+        while x != self.nil and (content != x._word or key != x.key):
             if key < x.key:
                 x = x.left
-            else:
+            elif key > x.key:
                 x = x.right
-        while x != self.nil and content != x._word:
-            if x.key != key:
-                x = self.nil
-            elif content < x._word:
-                x = x.left
             else:
-                x = x.right
+                if content < x._word:
+                    x = x.left
+                else:
+                    x = x.right
         return x
 
     def minimum(self, x=None):
@@ -451,7 +449,6 @@ class rbtree(object):
     def insert_node(self, z, point):
         y = self.nil
         x = self.root
-        z._point = point
         while x != self.nil:
             y = x
             if z.key < x.key:
@@ -465,7 +462,7 @@ class rbtree(object):
                     x = x.right
         z._p = y
         if y == self.nil:
-            self._root = zanj 
+            self._root = z
         elif z.key < y.key:
             y._left = z
         elif z.key > y.key:
@@ -749,7 +746,6 @@ def main():
     
     while True:
         os.system("cls")
-        print("제발" > "많은")
         num = menu()
         if not num.isdigit():
             print("\nWrong input!\n")
@@ -847,10 +843,7 @@ def main():
                 for i in range(len(tword.n)):
                     a = info.get_vertex(tword.n[i])
                     a.numt = a.numt - 1
-                delt = t.search_point(tword.l, userin)
-                print(delt._word)
-                if delt != t.nil:
-                    t.delete_node(delt)
+                t.delete_node(t.search_point(tword.l, userin))
                 del tword
                 print("Complete!")
 
@@ -919,14 +912,21 @@ def main():
                 sc.shortest_path()
                 def d_num(n):
                     return n.d
-                sc.vertices = sorted(sc.vertices, key = d_num)
+                svertices = list(sorted(sc.vertices, key = d_num))
                 print()
-                for i in range(5):
-                    v = sc.vertices[i+1]
+                for i in range(len(sc.vertices)-1):
+                    vs = svertices[i+1]
                     if v.d < INFTY:
                         print("Rank",i+1, end=': ')
-                        print(v.name,end=' ')
-                        print(v.d)
+                        print(vs.name,end=' ')
+                        print("Cost:",vs.d)
+                        if i < 5:
+                            print("Path:", vs.name,end=' ')
+                            p = vs.parent
+                            while p:
+                                print("← ", sc.vertices[p].name,end=' ')
+                                p = sc.vertices[p].parent
+                            print("← ",sc.vertices[p].name)
                     else:
                         print("After, there's no shortest path.")
                         break
